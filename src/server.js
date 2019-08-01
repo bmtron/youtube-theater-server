@@ -9,7 +9,7 @@ const io = socketIo(server)
 
 const db = knex({
     client: 'pg',
-    connection: process.env.DB_URL
+    connection: DB_URL
 })
 
 io.on("connection", socket => {
@@ -19,18 +19,23 @@ io.on("connection", socket => {
 
     socket.on('room', function(data) {
         socket.join(data.room)
-        io.in(data.room).emit('message', `Welcome to room ${data.room}`)
+        io.in(data.room).emit('welcome', `Welcome to room ${data.room}`)
+        io.in(data.room).emit('join', `${data.user} has joined the room.`)
     })
-    
     socket.on('leave room', (data) => {
         socket.leave((data.room))
     })
-    socket.on('coding event', function(data) {
-        io.in(data.room).emit('receive code', data)
+    socket.on('message', function(data) {
+        io.in(data.room).emit('receive message', data)
+        console.log(data)
     })
     socket.on('video source', function(data) {
         console.log(data)
         io.in(data.room).emit('update vid', data)
+    })
+    socket.on('pause', function(data) {
+        console.log(data)
+        io.in(data.room).emit('pause vid', data)
     })
 });
 
