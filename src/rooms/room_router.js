@@ -25,8 +25,8 @@ roomsRouter.route('/')
         }).catch(next)
     })
     .post(jsonParser, (req, res, next) => {
-        const { name, password } = req.body
-        const newRoom = { name, password }
+        const { name } = req.body
+        const newRoom = { name }
         for (const [key, value] of Object.entries(newRoom)) {
             if(value == null) {
                 return res.status(400).json({

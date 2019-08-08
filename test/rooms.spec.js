@@ -8,28 +8,22 @@ describe('Rooms service', function() {
     const testRooms = [
         {
             id: 1,
-            owner: 1,
             name: 'Test Room 1',
-            videos: 'Test'
         },
         {
             id: 2,
-            owner: 2,
             name: 'Test Room 2',
-            videos: 'Test'
         }
     ]
     const testUsers = [{
         id: 1,
         user_name: 'bmtron',
-        full_name: 'Brendan',
-        password: 'g'
+        password: 'Testpass!1'
     },
     {
         id: 2,
         user_name: 'tmitch',
-        full_name: 'Tyler',
-        password: 'r'
+        password: 'Testpass!1'
     }
 ]
     before('make knex instance', () => {
@@ -42,20 +36,18 @@ describe('Rooms service', function() {
 
     after('disconnect from db', () => db.destroy())
 
-    before('cleanup', () => db.raw(`TRUNCATE theater_users, theater_rooms, theater_user_access RESTART IDENTITY CASCADE`))
+    before('cleanup', () => db.raw(`TRUNCATE theater_users, theater_rooms RESTART IDENTITY CASCADE`))
 
-    afterEach('cleanup', () => db.raw(`TRUNCATE theater_users, theater_rooms, theater_user_access RESTART IDENTITY CASCADE`))
+    afterEach('cleanup', () => db.raw(`TRUNCATE theater_users, theater_rooms RESTART IDENTITY CASCADE`))
     beforeEach('insert users', () => db.into('theater_users').insert(testUsers))
     describe(`GET /api/rooms`, () => {
 
         context('there are rooms in the database', () => {
-            beforeEach('insert test data', () => db.raw(`INSERT INTO theater_rooms (id, name, videos, owner) VALUES ('1', 'Room 1', 'Test1', '1')`))
+            beforeEach('insert test data', () => db.raw(`INSERT INTO theater_rooms (id, name) VALUES ('1', 'Room 1')`))
             const expectedRooms = [
                 {
                     id: 1,
                     name: 'Room 1',
-                    videos: 'Test1',
-                    owner: 1
                 },
             ]
 
@@ -86,13 +78,11 @@ describe('Rooms service', function() {
         })
         context(`there is a room in the database`, () => {
             
-            beforeEach('insert test data', () => db.raw(`INSERT INTO theater_rooms (id, name, videos, owner) VALUES ('1', 'Room 1', 'Test1', '1'), ('2', 'Room 2', 'Test2', '2')`))
+            beforeEach('insert test data', () => db.raw(`INSERT INTO theater_rooms (id, name) VALUES ('1', 'Room 1'), ('2', 'Room 2')`))
             it(`responds with 200 and room info`, () => {
                 const expectedRoom = {
                     id: 1,
                     name: 'Room 1',
-                    videos: 'Test1',
-                    owner: 1
                 }
                 return supertest(app)
                     .get('/api/rooms/1')
@@ -100,22 +90,17 @@ describe('Rooms service', function() {
             })
         })
     })
-    describe('POST /api/rooms', () => {
+    describe.only('POST /api/rooms', () => {
         it('creates a room, responding with 201 and the room', () => {
             const newRoom = {
-                videos: 'Test',
                 name: 'Test Room',
-                owner: 1
             }
-
             return supertest(app)
                 .post('/api/rooms')
                 .send(newRoom)
                 .expect(201)
                 .expect(res => {
-                    expect(res.body.videos).to.eql(newRoom.videos)
                     expect(res.body.name).to.eql(newRoom.name)
-                    expect(res.body.owner).to.eql(newRoom.owner)
                     expect(res.body).to.have.property('id')
                     expect(res.headers.location).to.eql(`/api/rooms/${res.body.id}`)
                 })
@@ -125,13 +110,11 @@ describe('Rooms service', function() {
                     .expect(postRes.body)
                 })
         })
-        const requiredFields = ['name', 'videos', 'owner']
+        const requiredFields = ['name']
 
         requiredFields.forEach(field => {
             const newRoom = {
                 name: 'Test',
-                videos: 'Test',
-                owner: 1
             }
             it('responds with 400 and error for missing fields', () => {
                 delete newRoom[field]

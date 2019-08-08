@@ -1,7 +1,7 @@
 const app = require('../src/app')
 const knex = require('knex')
 
-describe.only('Users service', function() {
+describe('Users service', function() {
     let db
 
     const testUsers = [{
@@ -25,9 +25,9 @@ describe.only('Users service', function() {
 
     after('disconnect from db', () => db.destroy())
 
-    before('cleanup', () => db.raw(`TRUNCATE theater_users, theater_rooms, theater_user_access RESTART IDENTITY CASCADE`))
+    before('cleanup', () => db.raw(`TRUNCATE theater_users, theater_rooms RESTART IDENTITY CASCADE`))
 
-    afterEach('cleanup', () => db.raw(`TRUNCATE theater_users, theater_rooms, theater_user_access RESTART IDENTITY CASCADE`))
+    afterEach('cleanup', () => db.raw(`TRUNCATE theater_users, theater_rooms RESTART IDENTITY CASCADE`))
 
     describe('GET /api/users', () => {
         context('there are no users', () => {

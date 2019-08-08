@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken')
 const app = require('../src/app')
 const bcrypt = require('bcryptjs')
 
-describe.only('Auth Endpoints', function() {
+describe('Auth Endpoints', function() {
     let db
 
     const Users = [
@@ -41,9 +41,9 @@ function seedUsers(db, users) {
 
     after('disconnect from db', () => db.destroy())
 
-    before('cleanup', () => db.raw(`TRUNCATE theater_users, theater_rooms, theater_user_access RESTART IDENTITY CASCADE`))
+    before('cleanup', () => db.raw(`TRUNCATE theater_users, theater_rooms RESTART IDENTITY CASCADE`))
 
-    afterEach('cleanup', () => db.raw(`TRUNCATE theater_users, theater_rooms, theater_user_access RESTART IDENTITY CASCADE`))
+    afterEach('cleanup', () => db.raw(`TRUNCATE theater_users, theater_rooms RESTART IDENTITY CASCADE`))
 
     describe('POST /api/auth/login', () => {
         beforeEach('insert users', () => seedUsers(db, Users))
