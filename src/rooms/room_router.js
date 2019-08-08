@@ -36,16 +36,23 @@ roomsRouter.route('/')
                 })
             }
         }
-        RoomsService.addNewRoom(req.app.get('db'), newRoom)
-        .then(room => {
-            res
-            .status(201)
-            .location(path.posix.join(req.originalUrl, `/${room.id}`))
-            .json({
-                id: room.id,
-                name: room.name,
+        RoomsService.hasRoomWithRoomName(req.app.get('db'), name) 
+            .then(hasRoomWithRoomName => {
+                if(hasRoomWithRoomName)
+                    return res.status(400).json({
+                        error: 'That room already exists.'
+                    })
+                return RoomsService.addNewRoom(req.app.get('db'), newRoom)
+                .then(room => {
+                    res
+                    .status(201)
+                    .location(path.posix.join(req.originalUrl, `/${room.id}`))
+                    .json({
+                        id: room.id,
+                        name: room.name,
+                    })
+                }).catch(next)
             })
-        }).catch(next)
     })
 roomsRouter.route('/:room_id')
     .all((req, res, next) => {

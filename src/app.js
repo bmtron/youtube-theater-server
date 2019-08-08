@@ -7,8 +7,7 @@ const { NODE_ENV } = require('./config')
 const roomsRouter = require('./rooms/room_router')
 const usersRouter = require('./users/users_router')
 const authRouter = require('./auth/auth-router')
-const socketIo = require('socket.io')
-const axios = require('axios')
+
 
 const app = express()
 
@@ -31,7 +30,6 @@ app.use(function errorHandler(error, req, res, next) {
         response = { error: { message: 'server error' } }
     }
     else {
-        console.log(error)
         response = { message: error.message, error}
     }
     res.status(500).json(response)

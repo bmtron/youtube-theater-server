@@ -20,7 +20,13 @@ const RoomsService = {
         return db('theater_rooms')
         .where({id})
         .delete()
-    }
+    },
+    hasRoomWithRoomName(db, name) {
+        return db('theater_rooms')
+            .where({name})
+            .first()
+            .then(room => !!room)
+    },
 }
 
 module.exports = RoomsService
