@@ -54,6 +54,9 @@ Allows the ability to add new rooms to the database. Requires only a name.
 ### DELETE /api/rooms/:room_id
 Allows the ability to delete specific rooms based on the ID of the room in the database.
 
+### POST /api/login
+Handles the login authentication. Checks for valid username and password, and will return 'user_name or password invalid' for either username or password being incorrect. Creates a JWT upon successful validation that is passed to the client.
+
 ## Scripts
 
 Start the application `npm start`
