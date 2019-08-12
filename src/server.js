@@ -22,7 +22,7 @@ io.on("connection", socket => {
     socket.on('room', function(data) {
         socket.join(data.room)
         io.in(data.room).emit('welcome', `Welcome to room ${data.room}`)
-        io.in(data.room).emit('join', `${data.user} has joined the room.`)
+        io.in(data.room).emit('join', {user: data.user, message: ` has joined the room`})
     })
     socket.on('leave room', (data) => {
         socket.leave((data.room))
